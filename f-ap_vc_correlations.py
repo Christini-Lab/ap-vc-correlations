@@ -193,7 +193,7 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
         else:
             txt_fmt = '.1f'
 
-        heatmap(corr, ax=heatmap_ax, annot=True, annot_kws={"size":8}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt=txt_fmt, cbar=False)
+        heatmap(corr, vmin=-.9, vmax=.9, ax=heatmap_ax, annot=True, annot_kws={"size":8}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt=txt_fmt, cbar_kws = dict(use_gridspec=False,location="top", pad=.01), cmap="PiYG")
 
     corr_axs[3].set_ylabel(feature_names[feature])
 

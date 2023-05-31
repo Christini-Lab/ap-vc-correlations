@@ -144,7 +144,7 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None):
 
     corr = np.corrcoef(all_curr_times)
     if heatmap_ax is not None:
-        heatmap(corr, ax=heatmap_ax, annot=True, annot_kws={"size":6}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt='.1f')#, cbar=False)
+        heatmap(corr, vmin=-.9, vmax=.9, ax=heatmap_ax, annot=True, annot_kws={"size":6}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt='.1f', cbar_kws = dict(use_gridspec=False,location="top", pad=.01), cmap="PiYG")#, cbar=False)
 
     corr_axs[3].set_ylabel(feature_names[feature])
 
