@@ -69,8 +69,8 @@ def plot_i_ap_corr(corr_axs, feature, directory, heatmap_ax=None):
     correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
     seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
-    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
-    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
+    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange', 'CL': 'red'}
+    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)', 'CL': 'CL (ms)'}
 
     mask = ~all_ap_features[feature.lower()].isnull()
 

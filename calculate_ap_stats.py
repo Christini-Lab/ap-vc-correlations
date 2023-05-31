@@ -19,19 +19,19 @@ def write_ap_features():
 
         
     all_ap_features = np.array(all_ap_features)
-    all_ap_features = pd.DataFrame(all_ap_features, columns=['File', 'Drug', 'MP', 'APD90', 'CL', 'dVdt', 'Peak', 'Amplitude', 'APD20', 'MP_Drug', 'APD90_Drug', 'CL_Drug', 'dVdt_Drug', 'Peak_Drug', 'Amplitude_Drug', 'APD20_Drug'])
+    all_ap_features = pd.DataFrame(all_ap_features, columns=['File', 'Drug', 'MP', 'APD90', 'CL', 'dVdt', 'Peak', 'Amplitude', 'MP_Drug', 'APD90_Drug', 'CL_Drug', 'dVdt_Drug', 'Peak_Drug', 'Amplitude_Drug'])
 
     all_ap_features.to_csv('./data/ap_features.csv', index=False)
 
 
 def get_ap_features(f):
     #mp, apd90, apa, dvdt, peak, cl
-    mp, apd90, cl, dvdt, peak, apa, apd20 = None, None, None, None, None, None, None
-    mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug, apd20_drug = None, None, None, None, None, None, None
+    mp, apd90, cl, dvdt, peak, apa = None, None, None, None, None, None
+    mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug = None, None, None, None, None, None
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Pre-drug_spont.csv')
-    apd90 = get_apd(ap_dat)
-    apd20 = get_apd(ap_dat, 20)
+    apd90 = get_apd90(ap_dat)
+    #apd20 = get_apd(ap_dat, 20)
 
     if apd90 is not None:
         cl = get_cl(ap_dat)
@@ -41,8 +41,8 @@ def get_ap_features(f):
     mp = ap_dat['Voltage (V)'].min()*1000
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Post-drug_spont.csv')
-    apd90_drug = get_apd(ap_dat)
-    apd20_drug = get_apd(ap_dat, 20)
+    apd90_drug = get_apd90(ap_dat)
+    #apd20_drug = get_apd(ap_dat, 20)
 
     if apd90_drug is not None:
         cl_drug = get_cl(ap_dat)
@@ -52,10 +52,10 @@ def get_ap_features(f):
     mp_drug = ap_dat['Voltage (V)'].min()*1000
 
     #return {'mp': mp, 'apd90': apd90, 'cl': cl, 'dvdt': dvdt, 'peak': peak}
-    return [mp, apd90, cl, dvdt, peak, apa, apd20, mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug, apd20_drug]
+    return [mp, apd90, cl, dvdt, peak, apa, mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug]
 
 
-def get_apd(ap_dat, apd_num=90):
+def get_apd90(ap_dat):
     t = ap_dat['Time (s)'].values * 1000
     v = ap_dat['Voltage (V)'].values * 1000
 
@@ -68,19 +68,50 @@ def get_apd(ap_dat, apd_num=90):
     kernel = np.ones(kernel_size) / kernel_size
     v_smooth = np.convolve(v, kernel, mode='same')
 
-    peak_idxs = find_peaks(np.diff(v_smooth), height=.1, distance=1000)[0]
+    peak_idxs = find_peaks(np.diff(v_smooth), height=.1, distance=1700)[0]
 
     if len(peak_idxs) < 2:
         return None
 
-    min_v = np.min(v[peak_idxs[0]:peak_idxs[1]])
-    min_idx = np.argmin(v[peak_idxs[0]:peak_idxs[1]])
-    search_space = [peak_idxs[0], peak_idxs[0] + min_idx]
-    amplitude = np.max(v[search_space[0]:search_space[1]]) - min_v
-    v_90 = min_v + amplitude * (1-apd_num/100)
-    idx_apd90 = np.argmin(np.abs(v[search_space[0]:search_space[1]] - v_90))
+    #if len(peak_idxs) > 1:
+    #    peak_idxs = peak_idxs[1:-1]
 
-    return idx_apd90 / 10
+    all_apd90 = []
+    all_apd90_idxs = []
+    for st in range(0, len(peak_idxs)-2):
+        end = st + 1
+        min_v = np.min(v[peak_idxs[st]:peak_idxs[end]])
+        min_idx = np.argmin(v[peak_idxs[st]:peak_idxs[end]])
+        search_space = [peak_idxs[st], peak_idxs[st] + min_idx]
+        amplitude = np.max(v[search_space[0]:search_space[1]]) - min_v
+        v_90 = min_v + amplitude * .1
+        idx_apd90 = np.argmin(np.abs(v[search_space[0]:search_space[1]] - v_90))
+        all_apd90.append(idx_apd90 / 10)
+        all_apd90_idxs.append(search_space[0] + idx_apd90)
+
+
+    #min_v = np.min(v[peak_idxs[0]:peak_idxs[1]])
+    #min_idx = np.argmin(v[peak_idxs[0]:peak_idxs[1]])
+    #search_space = [peak_idxs[0], peak_idxs[0] + min_idx]
+    #amplitude = np.max(v[search_space[0]:search_space[1]]) - min_v
+    #v_90 = min_v + amplitude * .1
+    #idx_apd90 = np.argmin(np.abs(v[search_space[0]:search_space[1]] - v_90))
+
+
+    #if np.mean(all_apd90) > 300:
+    #    plt.plot(t, v_smooth)
+    #    [plt.axvline(t[idx]) for idx in peak_idxs]
+    #    plt.show()
+    #    return all_apd90[0]
+
+    #print(np.std(all_apd90))
+    #print(np.mean(all_apd90) - idx_apd90/10)
+
+    #if  len(all_apd90) > 4:
+    print(f'Avg APD90 of {np.mean(all_apd90)} and {np.std(all_apd90)} and CV of {np.std(all_apd90)/np.mean(all_apd90)}')
+        
+    return np.mean(all_apd90)
+    #return idx_apd90 / 10
 
 
 def get_cl(ap_dat):
@@ -226,3 +257,31 @@ def main():
 if __name__ == '__main__':
     main()
 
+
+
+def get_apd(ap_dat, apd_num=90):
+    t = ap_dat['Time (s)'].values * 1000
+    v = ap_dat['Voltage (V)'].values * 1000
+
+    if ((v.max() - v.min()) < 20):
+        return None
+    if v.max() < 0:
+        return None
+
+    kernel_size = 100
+    kernel = np.ones(kernel_size) / kernel_size
+    v_smooth = np.convolve(v, kernel, mode='same')
+
+    peak_idxs = find_peaks(np.diff(v_smooth), height=.1, distance=1000)[0]
+
+    if len(peak_idxs) < 2:
+        return None
+
+    min_v = np.min(v[peak_idxs[0]:peak_idxs[1]])
+    min_idx = np.argmin(v[peak_idxs[0]:peak_idxs[1]])
+    search_space = [peak_idxs[0], peak_idxs[0] + min_idx]
+    amplitude = np.max(v[search_space[0]:search_space[1]]) - min_v
+    v_90 = min_v + amplitude * (1-apd_num/100)
+    idx_apd90 = np.argmin(np.abs(v[search_space[0]:search_space[1]] - v_90))
+
+    return idx_apd90 / 10

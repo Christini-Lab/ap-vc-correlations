@@ -127,9 +127,15 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
             sorted(all_currs_df.columns), axis=1)
     all_ap_features = all_ap_features.sort_values('File')
 
-    valid_indices = np.invert(np.isnan(all_ap_features[feature]))
-    valid_ap_dat= all_ap_features[valid_indices]
-    valid_vc_dat = np.array([all_currs_df[col_name] for col_name in valid_ap_dat['File']])
+    if feature == 'CL':
+        all_files = cl_files()
+        valid_ap_dat = all_ap_features[all_ap_features['File'].isin(all_files)]
+        valid_vc_dat = np.array([all_currs_df[col_name] for col_name in all_files])
+    else:
+        valid_indices = np.invert(np.isnan(all_ap_features[feature]))
+        valid_ap_dat = all_ap_features[valid_indices]
+        valid_vc_dat = np.array([all_currs_df[col_name] for col_name in valid_ap_dat['File']])
+
 
     all_curr_times = []
 
@@ -141,9 +147,8 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
     seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
 
-
-    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
-    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
+    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange', 'CL': 'red'}
+    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)', 'CL': 'CL (ms)'}
 
     for i, corr_time in enumerate(correlation_times):
         mid_idx = int(corr_time*10)
@@ -151,6 +156,14 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
         #    i_curr = valid_vc_dat[:, (mid_idx-2000):(mid_idx+10)]
         #else:
         i_curr = valid_vc_dat[:, (mid_idx-10):(mid_idx+10)]
+
+        #REMOVE THIS IF STATEMENT!!!!
+        #if corr_time == 5840:
+        #    mid_idx = int(4895*10)
+        #    i_start = valid_vc_dat[:, (mid_idx-10):(mid_idx+10)]
+        #    mid_idx = int(5825*10)
+        #    i_end = valid_vc_dat[:, (mid_idx-10):(mid_idx+10)]
+        #    i_curr = i_end - i_start 
 
         if seg_type[i] == 'avg':
             i_curr = i_curr.mean(1)
@@ -267,6 +280,33 @@ def moving_average(x, n=10):
     return np.array(new_vals)
 
 
+def cl_files():
+    return ['4_021921_1_alex_control',
+            '4_021921_2_alex_control',
+            '4_022221_3_alex_cisapride',
+            '4_022421_1_alex_cisapride',
+            '4_022521_2_alex_cisapride',
+            '4_022621_2_alex_cisapride',
+            '4_022621_4_alex_cisapride',
+            '5_031221_2_alex_control',
+            '5_031821_1_alex_verapamil',
+            '5_031821_2_alex_verapamil',
+            '5_031921_3_alex_verapamil',
+            '6_033021_4_alex_control',
+            '6_033021_5_alex_control',
+            '6_033121_2_alex_control',
+            '6_040821_2_alex_quinidine',
+            '6_040921_1_alex_quinidine',
+            '7_042021_2_alex_quinine',
+            '7_042121_1_alex_quinine',
+            '7_042621_2_alex_quinine',
+            '7_042621_6_alex_quinine',
+            '7_042721_2_alex_quinine',
+            '7_042721_4_alex_quinine',
+            '7_042721_5_alex_quinine',
+            '7_042921_1_alex_quinine']
+
+
 def main():
     #ap_vc_corr()
     #ap_vc_corr_singlet(5500)
@@ -274,7 +314,11 @@ def main():
     #plot_figure_exp_vc_feature('APD90', heat_currents=['I6mV', 'IK1', 'If', 'IKs'])
     #plot_mod_vc_feature('APD90', heat_currents=['I6mV', 'IK1', 'If', 'IKs'])
 
-    plot_figure_exp_vc_feature('APD90', heat_currents=None)
+    #plot_figure_exp_vc_feature('APD90', heat_currents=None)
+    plot_figure_exp_vc_feature('CL', heat_currents=None)
+
+
+
 
 
 if __name__ == '__main__':
