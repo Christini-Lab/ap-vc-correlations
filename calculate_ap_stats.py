@@ -19,7 +19,7 @@ def write_ap_features():
 
         
     all_ap_features = np.array(all_ap_features)
-    all_ap_features = pd.DataFrame(all_ap_features, columns=['File', 'Drug', 'MP', 'APD90', 'CL', 'dVdt', 'Peak', 'Amplitude', 'MP_Drug', 'APD90_Drug', 'CL_Drug', 'dVdt_Drug', 'Peak_Drug', 'Amplitude_Drug'])
+    all_ap_features = pd.DataFrame(all_ap_features, columns=['File', 'Drug', 'MP', 'APD90', 'APD90_SD', 'CL', 'CL_SD',  'dVdt', 'dVdt_SD', 'Peak', 'Amplitude', 'MP_Drug', 'APD90_Drug', 'APD90_Drug_SD', 'CL_Drug', 'CL_Drug_SD', 'dVdt_Drug', 'dVdt_Drug_SD', 'Peak_Drug', 'Amplitude_Drug'])
 
     all_ap_features.to_csv('./data/ap_features.csv', index=False)
 
@@ -27,32 +27,34 @@ def write_ap_features():
 def get_ap_features(f):
     #mp, apd90, apa, dvdt, peak, cl
     mp, apd90, cl, dvdt, peak, apa = None, None, None, None, None, None
+    apd90_sd, cl_sd, dvdt_sd = None, None, None
     mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug = None, None, None, None, None, None
+    apd90_drug_sd, cl_drug_sd, dvdt_drug_sd = None, None, None
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Pre-drug_spont.csv')
-    apd90 = get_apd90(ap_dat)
+    apd90, apd90_sd = get_apd90(ap_dat)
     #apd20 = get_apd(ap_dat, 20)
 
     if apd90 is not None:
-        cl = get_cl(ap_dat)
-        dvdt = get_dvdt(ap_dat)
+        cl, cl_sd = get_cl(ap_dat)
+        dvdt, dvdt_sd = get_dvdt(ap_dat)
         peak = (ap_dat['Voltage (V)'].max())*1000 
 
     mp = ap_dat['Voltage (V)'].min()*1000
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Post-drug_spont.csv')
-    apd90_drug = get_apd90(ap_dat)
+    apd90_drug, apd90_drug_sd = get_apd90(ap_dat)
     #apd20_drug = get_apd(ap_dat, 20)
 
     if apd90_drug is not None:
-        cl_drug = get_cl(ap_dat)
-        dvdt_drug = get_dvdt(ap_dat)
+        cl_drug, cl_drug_sd = get_cl(ap_dat)
+        dvdt_drug, dvdt_drug_sd = get_dvdt(ap_dat)
         peak_drug = (ap_dat['Voltage (V)'].max())*1000 
 
     mp_drug = ap_dat['Voltage (V)'].min()*1000
 
     #return {'mp': mp, 'apd90': apd90, 'cl': cl, 'dvdt': dvdt, 'peak': peak}
-    return [mp, apd90, cl, dvdt, peak, apa, mp_drug, apd90_drug, cl_drug, dvdt_drug, peak_drug, apa_drug]
+    return [mp, apd90, apd90_sd, cl, cl_sd, dvdt, dvdt_sd, peak, apa, mp_drug, apd90_drug, apd90_drug_sd, cl_drug, cl_drug_sd, dvdt_drug, dvdt_drug_sd, peak_drug, apa_drug]
 
 
 def get_apd90(ap_dat):
@@ -60,9 +62,9 @@ def get_apd90(ap_dat):
     v = ap_dat['Voltage (V)'].values * 1000
 
     if ((v.max() - v.min()) < 20):
-        return None
+        return None, None
     if v.max() < 0:
-        return None
+        return None, None
 
     kernel_size = 100
     kernel = np.ones(kernel_size) / kernel_size
@@ -71,7 +73,7 @@ def get_apd90(ap_dat):
     peak_idxs = find_peaks(np.diff(v_smooth), height=.1, distance=1700)[0]
 
     if len(peak_idxs) < 2:
-        return None
+        return None, None
 
     #if len(peak_idxs) > 1:
     #    peak_idxs = peak_idxs[1:-1]
@@ -110,7 +112,7 @@ def get_apd90(ap_dat):
     #if  len(all_apd90) > 4:
     print(f'Avg APD90 of {np.mean(all_apd90)} and {np.std(all_apd90)} and CV of {np.std(all_apd90)/np.mean(all_apd90)}')
         
-    return np.mean(all_apd90)
+    return np.mean(all_apd90), np.std(all_apd90)
     #return idx_apd90 / 10
 
 
@@ -122,7 +124,7 @@ def get_cl(ap_dat):
 
     average_cl = np.mean(np.diff(peak_pts)) / 10
 
-    return average_cl
+    return average_cl, np.std(np.diff(peak_pts) / 10)
 
 
 def get_dvdt(ap_dat):
@@ -160,7 +162,7 @@ def get_dvdt(ap_dat):
 
     average_dvdt = np.mean(dvdt_maxs)
 
-    return average_dvdt
+    return average_dvdt, np.std(dvdt_maxs)
 
 
 def get_amplitude(ap_dat):
