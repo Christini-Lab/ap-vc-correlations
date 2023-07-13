@@ -36,20 +36,23 @@ def plot_figure(feature, heat_currents):
 
     for row in range(0, 3):
         for col in range(0, 3):
+            if (row == 2) and (col == 2):
+                continue
+
             ax = fig.add_subplot(corr_subgrid[row, col])
             if col != 0:
                 ax.set_yticklabels('')
 
             corr_axs.append(ax)
 
-    corr_axs[0].set_xticks([-150, -50])
-    corr_axs[1].set_xlim(-1, 12)
-    corr_axs[6].set_xlim(-11, -2)
+    #corr_axs[0].set_xticks([-150, -50])
+    #corr_axs[1].set_xlim(-1, 12)
+    #corr_axs[6].set_xlim(-11, -2)
 
     #heatmap_ax = fig.add_subplot(grid[0:3, 3:])
 
     plot_i_ap_corr(corr_axs, feature, None, heat_currents)
-    corr_axs[-2].set_xlabel(r'$I_{out}$ (pA/pF)')
+    corr_axs[-1].set_xlabel(r'$I_{out}$ (pA/pF)')
 
     all_ap_ax = fig.add_subplot(grid[0:3, 3:])
     plot_ap(all_ap_ax)
@@ -145,12 +148,12 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
 
     all_curr_times = []
 
-    current_indices = {'INa1':0, 'I6mV':1, 'IKr':2, 'ICaL':3, 'INa2':4, 'Ito':5, 'IK1':6, 'If':7, 'IKs':8}
+    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa2':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
 
-    seg_names = [r'$I_{Na1}$', r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
-    correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
-    seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
     feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
     feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
@@ -169,19 +172,22 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
 
         all_curr_times.append(i_curr)
         if feature_corrs[1] < 0.05:
+
+            if i == 0:
+                corr_axs[i].text(1, 450, f'{seg_names[i]}, r={round(feature_corrs[0], 2)}', fontsize=8)
+
             corr_axs[i].set_title(f'{seg_names[i]}, r={round(feature_corrs[0], 2)}', fontsize=8, y=.75)
-            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='k')
+            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='k', ci=None)
 
 
             circled_files = ['4_022421_1_alex_cisapride',
-                            '6_040921_1_alex_quinidine',
-                            '5_031921_3_alex_verapamil']
-
+                             '4_021921_1_alex_control']
+#
             indices = [i for i, row in enumerate(valid_ap_dat.values) if row[0] in circled_files]
 
             corr_axs[i].scatter(i_curr[indices[0]],
                     valid_ap_dat['APD90'].values[indices[0]],
-                    s=40, marker='s', color='#377eb8')
+                    s=40, marker='^', color='#4daf4a')
                     #facecolor='none', linewidth=1.5)
             #corr_axs[i].scatter(i_curr[indices[2]],
             #                    valid_ap_dat['APD90'].values[indices[2]],
@@ -189,15 +195,15 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
             #                    facecolor='none')
             corr_axs[i].scatter(i_curr[indices[1]],
                                 valid_ap_dat['APD90'].values[indices[1]],
-                                s=60, marker='^', color='#4daf4a')
+                                s=60, marker='s', color='#377eb8')
                                 #facecolor='none', linewidth=1.5)
 
         else:
             corr_axs[i].set_title(f'{seg_names[i]}', fontsize=8, y=.77)
             if i == 0:
-                corr_axs[i].text(-110, 450, f'{seg_names[i]}', fontsize=8)
+                corr_axs[i].text(3, 450, f'{seg_names[i]}', fontsize=8)
 
-            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey')
+            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey', ci=None)
         corr_axs[i].spines['top'].set_visible(False)
         corr_axs[i].spines['right'].set_visible(False)
         ap_rng = valid_ap_dat[feature].max() - valid_ap_dat[feature].min()
@@ -278,7 +284,8 @@ def plot_cc(ax, cc_type, col=None):
             if f == '6_040921_1_alex_quinidine':
                 #ax.plot(t, ap_dat, '#ff7f00', rasterized=True)
                 t_med, ap_med = t, ap_dat
-            if f == '5_031921_3_alex_verapamil':
+            #if f == '5_031921_3_alex_verapamil':
+            if f == '4_021921_1_alex_control':
                 #ax.plot(t, ap_dat, '#ff7f00', rasterized=True)
                 t_long, ap_long= t, ap_dat
             n += 1
@@ -340,6 +347,8 @@ def plot_vc(v_ax, i_ax, corr_name, xrange):
     start_idx, end_idx = t_window[0] * 10, t_window[1] * 10
     st, end = corr_time*10 + xrange[0]*10, corr_time*10 + xrange[1]*10
 
+    
+    num = 0
     for f in all_files:
         if '.DS' in f:
             continue
@@ -359,7 +368,8 @@ def plot_vc(v_ax, i_ax, corr_name, xrange):
 
         if f == '4_022421_1_alex_cisapride':
             vc_sh = vc_curr 
-        if f == '5_031921_3_alex_verapamil':
+        #if f == '5_031921_3_alex_verapamil':
+        if f == '4_021921_1_alex_control':
             vc_long = vc_curr 
 
     i_ax.plot(times, vc_sh, color='#377eb8')

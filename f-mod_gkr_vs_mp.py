@@ -63,6 +63,8 @@ def plot_kernik_ikr_knockdown(axs):
         mod, p, x = myokit.load('./mmt/kernik_leak_fixed.mmt')
         #mod, p, x = myokit.load('./mmt/paci_leak_ms_fixed.mmt')
         mod['ikr']['g_Kr'].set_rhs(g_scale) #Kernik
+        mod['geom']['Cm'].set_rhs(45)
+
         #mod['ikr']['g'].set_rhs(g_scale) #Paci
 
         sim = myokit.Simulation(mod)

@@ -156,12 +156,12 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
 
     all_curr_times = []
 
-    current_indices = {'INa1':0, 'I6mV':1, 'IKr':2, 'ICaL':3, 'INa2':4, 'Ito':5, 'IK1':6, 'If':7, 'IKs':8}
+    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa2':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
 
-    seg_names = [r'$I_{Na1}$', r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
-    correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
-    seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
     feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
     feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
@@ -181,7 +181,7 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
         all_curr_times.append(i_curr)
         if feature_corrs[1] < 0.05:
             corr_axs[i].set_title(f'{seg_names[i]}, r={round(feature_corrs[0], 2)}', fontsize=8, y=.75)
-            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='k')
+            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='k', ci=None)
 
 
             circled_files = ['3_021121_1_alex_cisapride',
@@ -207,7 +207,7 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
             if i == 0:
                 corr_axs[i].text(-110, -25, f'{seg_names[i]}', fontsize=8)
 
-            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey')
+            regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey', ci=None)
         corr_axs[i].spines['top'].set_visible(False)
         corr_axs[i].spines['right'].set_visible(False)
         ap_rng = valid_ap_dat[feature].max() - valid_ap_dat[feature].min()

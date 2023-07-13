@@ -14,6 +14,9 @@ def write_ap_features():
         if '.DS' in f:
             continue
 
+        if '3_021121_1_alex_cisapride' == f:
+            print('this is it')
+
         curr_ap_features = [f] + [f.split('_')[-1]] + get_ap_features(f)
         all_ap_features.append(curr_ap_features)
 
@@ -32,7 +35,7 @@ def get_ap_features(f):
     apd90_drug_sd, cl_drug_sd, dvdt_drug_sd = None, None, None
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Pre-drug_spont.csv')
-    apd90, apd90_sd = get_apd90(ap_dat)
+    apd90, apd90_sd = get_apd90(ap_dat, f)
     #apd20 = get_apd(ap_dat, 20)
 
     if apd90 is not None:
@@ -43,7 +46,7 @@ def get_ap_features(f):
     mp = ap_dat['Voltage (V)'].min()*1000
 
     ap_dat = pd.read_csv(f'./data/cells/{f}/Post-drug_spont.csv')
-    apd90_drug, apd90_drug_sd = get_apd90(ap_dat)
+    apd90_drug, apd90_drug_sd = get_apd90(ap_dat, f)
     #apd20_drug = get_apd(ap_dat, 20)
 
     if apd90_drug is not None:
@@ -57,7 +60,7 @@ def get_ap_features(f):
     return [mp, apd90, apd90_sd, cl, cl_sd, dvdt, dvdt_sd, peak, apa, mp_drug, apd90_drug, apd90_drug_sd, cl_drug, cl_drug_sd, dvdt_drug, dvdt_drug_sd, peak_drug, apa_drug]
 
 
-def get_apd90(ap_dat):
+def get_apd90(ap_dat, f):
     t = ap_dat['Time (s)'].values * 1000
     v = ap_dat['Voltage (V)'].values * 1000
 
@@ -78,9 +81,15 @@ def get_apd90(ap_dat):
     #if len(peak_idxs) > 1:
     #    peak_idxs = peak_idxs[1:-1]
 
+    #if '3_021121_1_alex_cisapride' == f:
+    #    import matplotlib.pyplot as plt
+    #    import pdb
+    #    pdb.set_trace()
+    #    print('this is it')
+
     all_apd90 = []
     all_apd90_idxs = []
-    for st in range(0, len(peak_idxs)-2):
+    for st in range(0, len(peak_idxs)-1):
         end = st + 1
         min_v = np.min(v[peak_idxs[st]:peak_idxs[end]])
         min_idx = np.argmin(v[peak_idxs[st]:peak_idxs[end]])
@@ -90,7 +99,6 @@ def get_apd90(ap_dat):
         idx_apd90 = np.argmin(np.abs(v[search_space[0]:search_space[1]] - v_90))
         all_apd90.append(idx_apd90 / 10)
         all_apd90_idxs.append(search_space[0] + idx_apd90)
-
 
     #min_v = np.min(v[peak_idxs[0]:peak_idxs[1]])
     #min_idx = np.argmin(v[peak_idxs[0]:peak_idxs[1]])
@@ -151,11 +159,7 @@ def get_dvdt(ap_dat):
         if start_pt < 0:
             continue
         end_pt = int(peak_pt/10)
-        #try:
         dvdt_maxs.append(np.max(v_diff[start_pt:end_pt]))
-        #except:
-        #    import pdb
-        #    pdb.set_trace()
 
         #plt.axvline(peak_pt/10, -50, 20, c='c')
         #plt.axvline(peak_pt/10-50, -50, 20, c='r')
