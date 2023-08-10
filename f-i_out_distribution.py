@@ -5,6 +5,7 @@ import numpy as np
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 from seaborn import histplot, distplot
+from matplotlib.ticker import MaxNLocator
 
 import myokit
 
@@ -125,10 +126,10 @@ def plot_figure():
 
     correlation_times = [600, 1263, 1986, 2760, 3641, 4300, 5840, 9040]
     correlation_times = [1263, 1986, 2760, 3641, 4300, 5840, 9040]
-    correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
-    seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
-    seg_names = [r'$I_{Na1}$', r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
 
     long_idx = 12
@@ -151,6 +152,7 @@ def plot_figure():
         ax_num = i
         histplot(i_curr, ax=axs[i], color='k')
         axs[i].set_title(seg_names[i], y=.95)
+        #axs[i].yaxis.set_major_locator(MaxNLocator(integer=True))
         try:
             axs[i].axvline(long_curr_val, color='pink', linestyle='--', linewidth=2)
         except:
@@ -161,6 +163,8 @@ def plot_figure():
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.set_ylabel('')
+
+    axs[-1].set_axis_off()
 
     axs[3].set_ylabel('Count')
     axs[-2].set_xlabel(r'$I_{out}$ (A/F)')

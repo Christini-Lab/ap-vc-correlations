@@ -37,15 +37,17 @@ def plot_figure(feature, heat_currents):
 
     for row in range(0, 3):
         for col in range(0, 3):
+            if (row == 2) and (col == 2):
+                continue
             ax = fig.add_subplot(corr_subgrid[row, col])
             if col != 0:
                 ax.set_yticklabels('')
 
             corr_axs.append(ax)
 
-    corr_axs[0].set_xticks([-150, -50])
-    corr_axs[1].set_xlim(-1, 12)
-    corr_axs[6].set_xlim(-11, -2)
+    #corr_axs[0].set_xticks([-150, -50])
+    #corr_axs[1].set_xlim(-1, 12)
+    #corr_axs[6].set_xlim(-11, -2)
 
     #heatmap_ax = fig.add_subplot(grid[0:3, 3:])
 
@@ -156,9 +158,9 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
 
     all_curr_times = []
 
-    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa2':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
+    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
 
-    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
     correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
     seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
@@ -205,7 +207,7 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None, heat_currents=None):
         else:
             corr_axs[i].set_title(f'{seg_names[i]}', fontsize=8, y=.77)
             if i == 0:
-                corr_axs[i].text(-110, -25, f'{seg_names[i]}', fontsize=8)
+                corr_axs[i].text(4, -25, f'{seg_names[i]}', fontsize=8)
 
             regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey', ci=None)
         corr_axs[i].spines['top'].set_visible(False)
@@ -344,8 +346,8 @@ def plot_vc(v_ax, i_ax, corr_name, xrange):
     all_ap_features = pd.read_csv('./data/ap_features.csv')
     t_window = [4000, 13500]
 
-    i_names = ['INa1', 'I6mV', 'IKr', 'ICaL', 'INa2', 'Ito', 'IK1', 'If', 'IKs']
-    correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    i_names = ['I6mV', 'IKr', 'ICaL', 'INa', 'Ito', 'IK1', 'If', 'IKs']
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
 
     corr_time_dict = dict(zip(i_names, correlation_times))
     corr_time = corr_time_dict[corr_name]

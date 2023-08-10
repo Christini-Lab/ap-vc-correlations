@@ -31,28 +31,30 @@ def plot_figure():
 
     grid = fig.add_gridspec(6, 6, hspace=1, wspace=1.4)
 
-    features = ['MP', 'APD90', 'dVdt']
-    for i, sub in enumerate([grid[0:3, 0:3], grid[0:3, 3:], grid[3:, 0:3]]):
+    features = ['MP', 'APD90', 'dVdt', 'CL']
+    for i, sub in enumerate([grid[0:3, 0:3], grid[0:3, 3:], grid[3:, 0:3], grid[3:, 3:]]):
         feature = features[i]
         corr_subgrid = sub.subgridspec(3, 3, hspace=.3)
         corr_axs = []
         for row in range(0, 3):
             for col in range(0, 3):
+                if (row == 2) and (col == 2):
+                    continue
                 ax = fig.add_subplot(corr_subgrid[row, col])
                 if col != 0:
                     ax.set_yticklabels('')
 
                 corr_axs.append(ax)
 
-        if i == 2:
-            heatmap_ax = fig.add_subplot(grid[3:, 3:])
-            plot_i_ap_corr(corr_axs, feature, heatmap_ax)
-        else:
-            plot_i_ap_corr(corr_axs, feature)
+        #if i == 2:
+        #    heatmap_ax = fig.add_subplot(grid[3:, 3:])
+        #    plot_i_ap_corr(corr_axs, feature, heatmap_ax)
+        #else:
+        plot_i_ap_corr(corr_axs, feature)
 
         #if i == 0:
         #    corr_axs[3].set_xlim(-200, 0)
-        corr_axs[-2].set_xlabel(r'$I_{out}$ (pA/pF)')
+        corr_axs[-1].set_xlabel(r'$I_{out}$ (pA/pF)')
 
     matplotlib.rcParams['pdf.fonttype'] = 42
     plt.savefig('./figure-pdfs/f-exp_ap_vc_curr_corrs.pdf', transparent=True)
@@ -100,15 +102,15 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None):
     #seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
     #seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{Na}$', r'$I_{CaL}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
     #correlation_times = [600, 1263, 1973, 1986, 3641, 4300, 5840, 9040]
-    seg_names = [r'$I_{Na1}$', r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
-    correlation_times = [501.5, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
-    seg_type = ['min', 'avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
 
 
 
-    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
-    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
+    feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange', 'CL': 'red'}
+    feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)', 'CL': 'CL (ms)'}
 
     for i, corr_time in enumerate(correlation_times):
         #if seg_names[i] == 'dIKs':
@@ -143,8 +145,17 @@ def plot_i_ap_corr(corr_axs, feature, heatmap_ax=None):
         corr_axs[i].set_ylim(valid_ap_dat[feature].min()-ap_rng*.1, valid_ap_dat[feature].max()+ap_rng*.3)
 
     corr = np.corrcoef(all_curr_times)
+
+    vals = np.zeros((9,9))
+
+    for row in range(0, len(all_curr_times)):
+        for col in range(0, len(all_curr_times)):
+            r, p = pearsonr(all_curr_times[row], all_curr_times[col])
+            if p < .05:
+                vals[row, col] = r
+
     if heatmap_ax is not None:
-        heatmap(corr, vmin=-.9, vmax=.9, ax=heatmap_ax, annot=True, annot_kws={"size":6}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt='.1f', cbar_kws = dict(use_gridspec=False,location="top", pad=.01), cmap="PiYG")#, cbar=False)
+        heatmap(vals, vmin=-.9, vmax=.9, ax=heatmap_ax, annot=True, annot_kws={"size":6}, mask=np.triu(corr), xticklabels=seg_names,yticklabels=seg_names, fmt='.1f', cbar_kws = dict(use_gridspec=False,location="top", pad=.01), cmap="PiYG")#, cbar=False)
 
     corr_axs[3].set_ylabel(feature_names[feature])
 

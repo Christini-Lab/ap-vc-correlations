@@ -23,19 +23,19 @@ def plot_figure():
     fig.subplots_adjust(.1, .07, .95, .95)
 
     #grid = fig.add_gridspec(3, 2, hspace=.32, wspace=0.1, height_ratios=[3, 4, 4])
-    grid = fig.add_gridspec(2, 2, hspace=.32, wspace=0.1, height_ratios=[3, 4])
-    correlation_times = [501, 600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
+    grid = fig.add_gridspec(2, 2, hspace=.32, wspace=0.1, height_ratios=[4, 3])
+    correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
 
 
-    ax_spont = fig.add_subplot(grid[0, 0])
-    ax_flat = fig.add_subplot(grid[0, 1])
+    ax_spont = fig.add_subplot(grid[1, 0])
+    ax_flat = fig.add_subplot(grid[1, 1])
 
     cols = ['k', 'lightskyblue']
 
     plot_cc(ax_spont, 'spont', cols[0])
     plot_cc(ax_flat, 'flat', cols[1])
 
-    vc_subgrid = grid[1,:].subgridspec(2, 1, wspace=.9, hspace=.1, height_ratios=[2,3])
+    vc_subgrid = grid[0,:].subgridspec(2, 1, wspace=.9, hspace=.1, height_ratios=[2,3])
     ax_vc_v = fig.add_subplot(vc_subgrid[0])
     ax_vc_i = fig.add_subplot(vc_subgrid[1])
 
@@ -46,7 +46,7 @@ def plot_figure():
     axs = [ax_spont, ax_flat, ax_vc_v, ax_vc_i]
 
     [ax_vc_v.axvline(curr_t, color='grey', linestyle='--', alpha=.5) for curr_t in correlation_times]
-    seg_names = [r'$I_{Na1}$', r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
     for i, curr_t in enumerate(correlation_times):
         if i == 0:
@@ -64,7 +64,7 @@ def plot_figure():
 
     letters = ['A', 'B', 'C', 'D', 'E']
     #for i, ax in enumerate([ax_spont, ax_flat, ax_vc_v, ax_vc_v1, ax_vc_v2]):
-    for i, ax in enumerate([ax_spont, ax_flat, ax_vc_v]):
+    for i, ax in enumerate([ax_vc_v, ax_spont, ax_flat]):
         if i == 2:
             ax.set_title(letters[i], y=.98, x=-.05)
         else:

@@ -291,7 +291,6 @@ def cl_files():
             '5_031221_2_alex_control',
             '5_031821_1_alex_verapamil',
             '5_031821_2_alex_verapamil',
-            '5_031921_3_alex_verapamil',
             '6_033021_4_alex_control',
             '6_033021_5_alex_control',
             '6_033121_2_alex_control',

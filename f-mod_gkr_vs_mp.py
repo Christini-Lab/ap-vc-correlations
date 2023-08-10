@@ -33,7 +33,7 @@ def plot_figure():
     plot_kernik_ikr_knockdown(axs)
 
     axs[0].set_ylabel('Voltage (mV)')
-    axs[1].set_ylabel('MDP (mV)')
+    axs[1].set_ylabel('MP (mV)')
     axs[0].set_xlabel('Time (ms)')
     axs[1].set_xlabel(r'Scaled $g_{Kr}$')
 

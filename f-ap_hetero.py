@@ -145,7 +145,7 @@ def plot_ap_feature_vs_lit(ax, feature_name, is_chamber_merged):
     ax.errorbar(x, y_vals, y_std, capsize=2, ls='none', color='k')
     ax.axhline(exp_dat[feature_name].mean(), color='grey', linestyle='--')
 
-    feature_name_dict = {'MP': 'MDP (mV)',
+    feature_name_dict = {'MP': 'MP (mV)',
                          'APD90': r'$APD_{90}$ (ms)',
                          'dVdt': 'dV/dt (V/s)'}
     ax.set_ylabel(feature_name_dict[feature_name])

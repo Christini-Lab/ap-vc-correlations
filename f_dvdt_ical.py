@@ -39,14 +39,17 @@ def plot_figure():
     corr_axs = []
     for row in range(0, 3):
         for col in range(0, 3):
+            if (row == 2) and (col == 2):
+                continue
+
             ax = fig.add_subplot(corr_subgrid[row, col])
             if col != 0:
                 ax.set_yticklabels('')
 
             corr_axs.append(ax)
     plot_i_ap_corr(corr_axs, 'dVdt')
-    corr_axs[0].set_xticks([-150, -50])
-    corr_axs[-2].set_xlabel(r'$I_{out}$ (pA/pF)')
+    #corr_axs[0].set_xticks([-150, -50])
+    corr_axs[-1].set_xlabel(r'$I_{out}$ (pA/pF)')
 
     axs.append(corr_axs[0])
 
@@ -123,14 +126,12 @@ def plot_i_ap_corr(corr_axs, feature):
 
     all_curr_times = []
 
-    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa2':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
+    current_indices = {'I6mV':0, 'IKr':1, 'ICaL':2, 'INa':3, 'Ito':4, 'IK1':5, 'If':6, 'IKs':7}
 
-    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na2}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
+    seg_names = [r'$I_{6mV}$', r'$I_{Kr}$', r'$I_{CaL}$', r'$I_{Na}$', '$I_{to}$', '$I_{K1}$', '$I_{f}$', '$I_{Ks}$']
 
     correlation_times = [600, 1262, 1986, 2760, 3641, 4300, 5840, 9040]
     seg_type = ['avg', 'avg', 'min', 'min', 'max', 'avg', 'avg', 'avg']
-
-
 
     feature_cols = {'MP': '#4daf4a', 'APD90': 'purple', 'dVdt': 'orange'}
     feature_names = {'MP': 'MP (mV)', 'APD90': r'$APD_{90}$ (ms)', 'dVdt': r'$dV/dt_{max}$ (V/s)'}
@@ -154,7 +155,7 @@ def plot_i_ap_corr(corr_axs, feature):
         else:
             corr_axs[i].set_title(f'{seg_names[i]}', fontsize=8, y=.77)
             if i == 0:
-                corr_axs[i].text(-110, 37, f'{seg_names[i]}', fontsize=8)
+                corr_axs[i].text(4, 37, f'{seg_names[i]}', fontsize=8)
 
             regplot(x=i_curr, y=valid_ap_dat[feature].values, ax=corr_axs[i], color='grey', ci=None)
         corr_axs[i].spines['top'].set_visible(False)
