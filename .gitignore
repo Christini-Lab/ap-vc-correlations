@@ -1,6 +1,5 @@
 .DS_Store
 *.swp
 figure-pdfs/*
-data/*
+data/mod_populations
 archive/*
-
