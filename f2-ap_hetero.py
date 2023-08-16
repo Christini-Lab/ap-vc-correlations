@@ -132,13 +132,22 @@ def plot_ap_feature_vs_lit(ax, feature_name, is_chamber_merged):
     lit_dat.sort_values('MP', inplace=True, ascending=False)
 
     x = np.linspace(1, lit_dat[feature_name].shape[0]+1, lit_dat[feature_name].shape[0]+1)
+
+    i = 0
+    exp_mean_mp = exp_dat['MP'].mean()
+    for val in lit_dat['MP'].values:
+        if val < exp_mean_mp:
+            break
+        i += 1
+
     y_vals = [v for v in lit_dat[feature_name].values]
-    y_vals = [exp_dat[feature_name].mean()] + y_vals
+    y_vals = y_vals[0:i] + [exp_dat[feature_name].mean()] + y_vals[i:]
     
     y_std = [v for v in lit_dat[f'{feature_name} SD']]
-    y_std = [exp_dat[feature_name].std()] + y_std 
+    y_std = y_std[0:i] + [exp_dat[feature_name].std()] + y_std[i:]
 
-    x_vals = [1 + np.random.uniform(-.1, .1) for i in range(0, exp_dat.shape[0])]
+    x_pos = i
+    x_vals = [x_pos+1 + np.random.uniform(-.1, .1) for i in range(0, exp_dat.shape[0])]
 
     ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
     ax.scatter(x, y_vals, color='k')
@@ -169,13 +178,29 @@ def plot_dVdt(ax_small, ax_large, is_chamber_merged):
     lit_dat.sort_values('MP', inplace=True, ascending=False)
 
     x = np.linspace(1, lit_dat[feature_name].shape[0]+1, lit_dat[feature_name].shape[0]+1)
+
+    i = 0
+    exp_mean_mp = exp_dat['MP'].mean()
+    for val in lit_dat['MP'].values:
+        if val < exp_mean_mp:
+            break
+        i += 1
+
     y_vals = [v for v in lit_dat[feature_name].values]
-    y_vals = [exp_dat[feature_name].mean()] + y_vals
+    y_vals = y_vals[0:i] + [exp_dat[feature_name].mean()] + y_vals[i:]
     
     y_std = [v for v in lit_dat[f'{feature_name} SD']]
-    y_std = [exp_dat[feature_name].std()] + y_std 
+    y_std = y_std[0:i] + [exp_dat[feature_name].std()] + y_std[i:]
 
-    x_vals = [1 + np.random.uniform(-.1, .1) for i in range(0, exp_dat.shape[0])]
+    x_pos = i
+    x_vals = [x_pos+1 + np.random.uniform(-.1, .1) for i in range(0, exp_dat.shape[0])]
+
+
+
+
+
+
+
 
     for ax in [ax_small, ax_large]:
         ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
@@ -200,12 +225,20 @@ def plot_literature_names(ax, is_chamber_merged):
         lit_dat = merge_chamber_dat(lit_dat)
 
     lit_dat.sort_values('MP', inplace=True, ascending=False)
+    exp_dat = pd.read_csv('./data/ap_features.csv')
 
-    sorted_auths = lit_dat['First author'].values
+    i = 0
+    exp_mean_mp = exp_dat['MP'].mean()
+    for val in lit_dat['MP'].values:
+        if val < exp_mean_mp:
+            break
+        i += 1
 
-    ax.text(-0.26, .95, '1. Clark', fontsize=9)
+    sorted_auths = lit_dat['First author'].values[0:i].tolist() + [r'$\bf{Clark}$'] + lit_dat['First author'].values[i:].tolist()
 
-    [ax.text(-.26, .92-.03*i, f'{i+2}. {a}', fontsize=9) for i, a in enumerate(sorted_auths)]
+    #ax.text(-0.26, .95, '1. Clark', fontsize=9)
+
+    [ax.text(-.26, .95-.03*i, f'{i+1}. {a}', fontsize=9) for i, a in enumerate(sorted_auths)]
 
     #ax.text(0, 1, 'h1', fontsize=10)
     #ax.text(5, 5, 'h2')

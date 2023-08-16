@@ -253,7 +253,7 @@ def plot_dvdt_rmp(ax):
     ax.scatter(all_ap_features['MP'].values[valid_indices],
                     all_ap_features['dVdt'].values[valid_indices],
                     color='k')
-    ax.set_xlabel('MDP (mV)')
+    ax.set_xlabel('MP (mV)')
     ax.set_ylabel(r'$dV/dt_{max}$')
 
     mask = all_ap_features['MP'] < -70
