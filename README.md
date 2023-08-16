@@ -25,5 +25,4 @@ TODO
 
 ### Download data
 
-1. `cd` into `/figures`. 
-2. Download all raw experimental data from [HERE, TODO]() and extract the data inside the root. That's it!
+1. Download all raw experimental data from [HERE, TODO]() and extract the data inside the root. Please reach out to me if this link is not updated. I am happy to share all required data with you.
