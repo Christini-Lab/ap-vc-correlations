@@ -28,11 +28,8 @@ plt.rc('legend', fontsize = 8)
 
 
 
-
-
-
-i_segs = ['Ito', 'IK1', 'If', 'IKs']
-directory = 'pop_7_Paci'
+i_segs = ['Ito', 'IK1', 'If', 'IKr']
+directory = 'pop_8_Kernik'
 
 all_vc_dat = np.load(f'./data/mod_populations/{directory}/vc_iout.npy')
 all_ind_params = pd.read_csv(f'./data/mod_populations/{directory}/all_params.csv')
