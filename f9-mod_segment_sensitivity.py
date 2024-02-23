@@ -29,6 +29,7 @@ plt.rc('legend', fontsize = 8)
 
 
 i_segs = ['Ito', 'IK1', 'If', 'IKr']
+i_segs = ['I6mV', 'IK1', 'If', 'IKr']
 directory = 'pop_8_Kernik'
 
 all_vc_dat = np.load(f'./data/mod_populations/{directory}/vc_iout.npy')

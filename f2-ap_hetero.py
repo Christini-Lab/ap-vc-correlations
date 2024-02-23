@@ -149,10 +149,10 @@ def plot_ap_feature_vs_lit(ax, feature_name, is_chamber_merged):
     x_pos = i
     x_vals = [x_pos+1 + np.random.uniform(-.1, .1) for i in range(0, exp_dat.shape[0])]
 
-    ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
+    #ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
     ax.scatter(x, y_vals, color='k')
     ax.errorbar(x, y_vals, y_std, capsize=2, ls='none', color='k')
-    ax.axhline(exp_dat[feature_name].mean(), color='grey', linestyle='--')
+    #ax.axhline(exp_dat[feature_name].mean(), color='grey', linestyle='--')
 
     feature_name_dict = {'MP': 'MP (mV)',
                          'APD90': r'$APD_{90}$ (ms)',
@@ -203,10 +203,10 @@ def plot_dVdt(ax_small, ax_large, is_chamber_merged):
 
 
     for ax in [ax_small, ax_large]:
-        ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
+        #ax.scatter(x_vals, exp_dat[feature_name], color='grey', alpha=.6, s=6)
         ax.scatter(x, y_vals, color='k')
         ax.errorbar(x, y_vals, y_std, capsize=2, ls='none', color='k')
-        ax.axhline(exp_dat[feature_name].mean(), color='grey', linestyle='--')
+        #ax.axhline(exp_dat[feature_name].mean(), color='grey', linestyle='--')
 
         feature_name_dict = {'MP': 'MP (mV)',
                              'APD90': r'$APD_{90}$ (ms)',
@@ -234,7 +234,7 @@ def plot_literature_names(ax, is_chamber_merged):
             break
         i += 1
 
-    sorted_auths = lit_dat['First author'].values[0:i].tolist() + [r'$\bf{Clark}$'] + lit_dat['First author'].values[i:].tolist()
+    sorted_auths = lit_dat['First author'].values[0:i].tolist() + [r'Clark'] + lit_dat['First author'].values[i:].tolist()
 
     #ax.text(-0.26, .95, '1. Clark', fontsize=9)
 

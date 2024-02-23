@@ -56,8 +56,9 @@ def plot_ical_kernik():
     styles = ['k', 'r--']
     labs = ['Baseline', r'$I_{CaL}$ block']
 
-    for i, g_scale in enumerate([1, .3]):
+    for i, g_scale in enumerate([100, 110]):
         model_path = './mmt/kernik_artifact_fixed.mmt'
+        model_path = './mmt/kernik_artifact.mmt'
         mod = myokit.load_model(model_path)
         mod['geom']['Cm'].set_rhs(MOD_Cm)
 
@@ -66,12 +67,15 @@ def plot_ical_kernik():
         mod['voltageclamp']['rseries_est'].set_rhs(MOD_rseries)
         mod['voltageclamp']['gLeak'].set_rhs(MOD_gLeak)
 
-        mod['ical']['g_scale'].set_rhs(g_scale)
+        #ki.Ki      =  1.047488243941121e+02
+
+        #if i == 1:
+        #    mod['ki']['Ki'].set_rhs(g_scale)
 
         p = mod.get('engine.pace')
         p.set_binding(None)
 
-        prestep = 50000
+        prestep = 10000
         vc_proto = return_vc_proto(prestep_size=prestep)
 
         proto = myokit.Protocol()
