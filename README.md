@@ -1,4 +1,4 @@
-##Single-cell ionic current phenotyping explains stem cell-derived
+## Single-cell ionic current phenotyping explains stem cell-derived
 cardiomyocyte action potential morphology
 
 By: Alexander P. Clark, Siyu Wei, Kristin Fullerton, Trine Krogh-Madsen, David J. Christini 
