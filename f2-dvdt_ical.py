@@ -269,8 +269,8 @@ def plot_dvdt_rmp(ax):
 
     ax.add_patch(el)
 
-    regplot(all_ap_features['MP'].values[valid_indices],
-                all_ap_features['dVdt'].values[valid_indices],
+    regplot(x=all_ap_features['MP'].values[valid_indices],
+                y=all_ap_features['dVdt'].values[valid_indices],
                 ax=ax, color='k', ci=None)
 
     print(f'Correlation between dV/dt and MDP is: {x}')
